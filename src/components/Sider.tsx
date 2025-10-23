@@ -24,13 +24,7 @@ export const CustomSider: React.FC = () => {
   const currentKey = selectedKey || location.pathname
 
   return (
-    <AntdSider
-      width={200}
-      style={{
-        background: '#fff',
-        borderRight: '1px solid #f0f0f0'
-      }}
-    >
+    <AntdSider width={200}>
       <Menu
         mode="inline"
         selectedKeys={[currentKey]}

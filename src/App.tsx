@@ -5,7 +5,7 @@ import routerBindings, {
 } from '@refinedev/react-router-v6'
 import { BrowserRouter, Outlet, Route, Routes, Navigate } from 'react-router-dom'
 import { ThemedLayoutV2, ThemedTitleV2, ErrorComponent } from '@refinedev/antd'
-import { App as AntdApp, ConfigProvider } from 'antd'
+import { App as AntdApp, ConfigProvider, theme } from 'antd'
 import {
   DashboardOutlined,
   UserOutlined,
@@ -34,6 +34,7 @@ function App() {
     <BrowserRouter>
       <ConfigProvider
           theme={{
+            algorithm: theme.darkAlgorithm,
             token: {
               colorPrimary: '#1890ff'
             }
