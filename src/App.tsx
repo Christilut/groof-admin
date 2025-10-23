@@ -1,8 +1,7 @@
 import { Refine, Authenticated } from '@refinedev/core'
 import routerBindings, {
   DocumentTitleHandler,
-  UnsavedChangesNotifier,
-  NavigateToResource
+  UnsavedChangesNotifier
 } from '@refinedev/react-router-v6'
 import { BrowserRouter, Outlet, Route, Routes, Navigate } from 'react-router-dom'
 import { ThemedLayoutV2, ThemedTitleV2, ErrorComponent } from '@refinedev/antd'

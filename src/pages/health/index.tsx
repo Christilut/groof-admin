@@ -25,7 +25,6 @@ export const Health: React.FC = () => {
       queryKey: ['health', refreshKey]
     }
   })
-
   const health = data?.data
 
   // Auto-refresh every 30 seconds
@@ -75,7 +74,7 @@ export const Health: React.FC = () => {
                     <ul style={{ margin: 0, paddingLeft: 20 }}>
                       {Object.entries(health.mongodb.collections).map(([name, count]) => (
                         <li key={name}>
-                          {name}: {count} documents
+                          {name}: {String(count)} documents
                         </li>
                       ))}
                     </ul>

@@ -22,13 +22,13 @@ export const Dashboard: React.FC = () => {
   const { timeRange, setTimeRange } = useTimeRange()
 
   // Fetch overview statistics
-  const { data: statsData, isLoading: statsLoading } = useCustom<Statistics>({
+  const statsQuery = useCustom<Statistics>({
     url: '/admin/statistics',
     method: 'get'
   })
 
   // Fetch user growth
-  const { data: userGrowthData, isLoading: userGrowthLoading } = useCustom<{
+  const userGrowthQuery = useCustom<{
     data: UserGrowth[]
   }>({
     url: '/admin/statistics/users',
@@ -39,7 +39,7 @@ export const Dashboard: React.FC = () => {
   })
 
   // Fetch track statistics
-  const { data: trackStatsData, isLoading: trackStatsLoading } = useCustom<{
+  const trackStatsQuery = useCustom<{
     interactions: TrackInteraction[]
     totalTracks: number
   }>({
@@ -49,6 +49,13 @@ export const Dashboard: React.FC = () => {
       query: { range: timeRange }
     }
   })
+
+  const statsData = statsQuery.data
+  const statsLoading = statsQuery.isLoading
+  const userGrowthData = userGrowthQuery.data
+  const userGrowthLoading = userGrowthQuery.isLoading
+  const trackStatsData = trackStatsQuery.data
+  const trackStatsLoading = trackStatsQuery.isLoading
 
   const statistics = statsData?.data
   const userGrowth = userGrowthData?.data?.data || []
