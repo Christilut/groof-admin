@@ -85,7 +85,8 @@ function App() {
                 ]}
                 options={{
                   syncWithLocation: true,
-                  warnWhenUnsavedChanges: true
+                  warnWhenUnsavedChanges: true,
+                  title: { text: 'Groof Admin' }
                 }}
               >
                 <Routes>
@@ -130,7 +131,20 @@ function App() {
                 </Routes>
 
                 <UnsavedChangesNotifier />
-                <DocumentTitleHandler />
+                <DocumentTitleHandler
+                  handler={({ resource, action, params }) => {
+                    let title = 'Groof Admin'
+
+                    if (resource && action) {
+                      const actionName = action === 'list' ? '' : action
+                      title = `${resource.label || resource.name} ${actionName} | Groof Admin`
+                    } else if (resource) {
+                      title = `${resource.label || resource.name} | Groof Admin`
+                    }
+
+                    return title.trim()
+                  }}
+                />
               </Refine>
             </TimeRangeProvider>
           </AntdApp>
