@@ -1,10 +1,11 @@
-import { Refine } from '@refinedev/core'
+import { Refine, Authenticated } from '@refinedev/core'
 import routerBindings, {
   DocumentTitleHandler,
-  UnsavedChangesNotifier
+  UnsavedChangesNotifier,
+  NavigateToResource
 } from '@refinedev/react-router-v6'
-import { BrowserRouter, Outlet, Route, Routes } from 'react-router-dom'
-import { ThemedLayoutV2, ThemedTitleV2, ErrorComponent, AuthPage } from '@refinedev/antd'
+import { BrowserRouter, Outlet, Route, Routes, Navigate } from 'react-router-dom'
+import { ThemedLayoutV2, ThemedTitleV2, ErrorComponent } from '@refinedev/antd'
 import { App as AntdApp, ConfigProvider } from 'antd'
 import {
   DashboardOutlined,
@@ -24,6 +25,7 @@ import { Dashboard } from './pages/dashboard'
 import { UserList, UserShow, UserEdit } from './pages/users'
 import { LogList, LogShow } from './pages/logs'
 import { Health } from './pages/health'
+import { Login } from './pages/login'
 
 function App() {
   return (
@@ -86,16 +88,21 @@ function App() {
                 <Routes>
                   <Route
                     element={
-                      <ThemedLayoutV2
-                        Title={({ collapsed }) => (
-                          <ThemedTitleV2
-                            collapsed={collapsed}
-                            text="Groof Admin"
-                          />
-                        )}
+                      <Authenticated
+                        key="authenticated-layout"
+                        fallback={<Navigate to="/login" replace />}
                       >
-                        <Outlet />
-                      </ThemedLayoutV2>
+                        <ThemedLayoutV2
+                          Title={({ collapsed }) => (
+                            <ThemedTitleV2
+                              collapsed={collapsed}
+                              text="Groof Admin"
+                            />
+                          )}
+                        >
+                          <Outlet />
+                        </ThemedLayoutV2>
+                      </Authenticated>
                     }
                   >
                     <Route index element={<Dashboard />} />
@@ -113,17 +120,7 @@ function App() {
                   </Route>
 
                   <Route
-                    element={
-                      <AuthPage
-                        type="login"
-                        formProps={{
-                          initialValues: {
-                            email: '',
-                            password: ''
-                          }
-                        }}
-                      />
-                    }
+                    element={<Login />}
                     path="/login"
                   />
                 </Routes>
