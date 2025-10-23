@@ -1,0 +1,32 @@
+{
+  "name": "groof-admin",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "deploy": "npm run build && vercel --prod"
+  },
+  "dependencies": {
+    "@ant-design/icons": "^5.5.1",
+    "@refinedev/antd": "^5.43.1",
+    "@refinedev/core": "^4.54.1",
+    "@refinedev/react-router-v6": "^4.6.0",
+    "antd": "^5.21.6",
+    "axios": "^1.7.9",
+    "firebase": "^11.1.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.28.0",
+    "recharts": "^2.15.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "^5.8.3",
+    "vite": "^6.0.3"
+  }
+}

@@ -1,0 +1,141 @@
+import { Refine } from '@refinedev/core'
+import routerBindings, {
+  DocumentTitleHandler,
+  UnsavedChangesNotifier
+} from '@refinedev/react-router-v6'
+import { BrowserRouter, Outlet, Route, Routes } from 'react-router-dom'
+import { ThemedLayoutV2, ThemedTitleV2, ErrorComponent, AuthPage } from '@refinedev/antd'
+import { App as AntdApp, ConfigProvider } from 'antd'
+import {
+  DashboardOutlined,
+  UserOutlined,
+  FileTextOutlined,
+  HeartOutlined
+} from '@ant-design/icons'
+
+import '@refinedev/antd/dist/reset.css'
+
+import { authProvider } from './providers/authProvider'
+import { dataProvider } from './providers/dataProvider'
+import { TimeRangeProvider } from './contexts/TimeRangeContext'
+
+// Pages
+import { Dashboard } from './pages/dashboard'
+import { UserList, UserShow, UserEdit } from './pages/users'
+import { LogList, LogShow } from './pages/logs'
+import { Health } from './pages/health'
+
+function App() {
+  return (
+    <BrowserRouter>
+      <ConfigProvider
+          theme={{
+            token: {
+              colorPrimary: '#1890ff'
+            }
+          }}
+        >
+          <AntdApp>
+            <TimeRangeProvider>
+              <Refine
+                dataProvider={dataProvider}
+                authProvider={authProvider}
+                routerProvider={routerBindings}
+                resources={[
+                  {
+                    name: 'dashboard',
+                    list: '/',
+                    meta: {
+                      label: 'Dashboard',
+                      icon: <DashboardOutlined />
+                    }
+                  },
+                  {
+                    name: 'users',
+                    list: '/users',
+                    show: '/users/show/:id',
+                    edit: '/users/edit/:id',
+                    meta: {
+                      label: 'Users',
+                      icon: <UserOutlined />
+                    }
+                  },
+                  {
+                    name: 'logs',
+                    list: '/logs',
+                    show: '/logs/show/:id',
+                    meta: {
+                      label: 'Logs',
+                      icon: <FileTextOutlined />
+                    }
+                  },
+                  {
+                    name: 'health',
+                    list: '/health',
+                    meta: {
+                      label: 'System Health',
+                      icon: <HeartOutlined />
+                    }
+                  }
+                ]}
+                options={{
+                  syncWithLocation: true,
+                  warnWhenUnsavedChanges: true
+                }}
+              >
+                <Routes>
+                  <Route
+                    element={
+                      <ThemedLayoutV2
+                        Title={({ collapsed }) => (
+                          <ThemedTitleV2
+                            collapsed={collapsed}
+                            text="Groof Admin"
+                          />
+                        )}
+                      >
+                        <Outlet />
+                      </ThemedLayoutV2>
+                    }
+                  >
+                    <Route index element={<Dashboard />} />
+                    <Route path="/users">
+                      <Route index element={<UserList />} />
+                      <Route path="show/:id" element={<UserShow />} />
+                      <Route path="edit/:id" element={<UserEdit />} />
+                    </Route>
+                    <Route path="/logs">
+                      <Route index element={<LogList />} />
+                      <Route path="show/:id" element={<LogShow />} />
+                    </Route>
+                    <Route path="/health" element={<Health />} />
+                    <Route path="*" element={<ErrorComponent />} />
+                  </Route>
+
+                  <Route
+                    element={
+                      <AuthPage
+                        type="login"
+                        formProps={{
+                          initialValues: {
+                            email: '',
+                            password: ''
+                          }
+                        }}
+                      />
+                    }
+                    path="/login"
+                  />
+                </Routes>
+
+                <UnsavedChangesNotifier />
+                <DocumentTitleHandler />
+              </Refine>
+            </TimeRangeProvider>
+          </AntdApp>
+        </ConfigProvider>
+    </BrowserRouter>
+  )
+}
+
+export default App
