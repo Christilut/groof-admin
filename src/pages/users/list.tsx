@@ -7,7 +7,7 @@ import {
   DeleteButton,
   DateField
 } from '@refinedev/antd'
-import { Table, Space, Input, Tag } from 'antd'
+import { Table, Space, Input, Tag, Form } from 'antd'
 import { User } from '../../types'
 
 export const UserList: React.FC = () => {
@@ -26,16 +26,16 @@ export const UserList: React.FC = () => {
 
   return (
     <List>
-      <div style={{ marginBottom: 16 }}>
-        <Input.Search
-          placeholder="Search by email or name"
-          onSearch={(value) => {
-            searchFormProps?.form?.setFieldsValue({ search: value })
-            searchFormProps?.form?.submit()
-          }}
-          style={{ width: 300 }}
-        />
-      </div>
+      <Form {...searchFormProps} layout="inline" style={{ marginBottom: 16 }}>
+        <Form.Item name="search">
+          <Input.Search
+            placeholder="Search by email or name"
+            onSearch={() => searchFormProps?.form?.submit()}
+            style={{ width: 300 }}
+            allowClear
+          />
+        </Form.Item>
+      </Form>
 
       <Table {...tableProps} rowKey="_id">
         <Table.Column dataIndex="email" title="Email" />

@@ -26,6 +26,9 @@ import { LogList, LogShow } from './pages/logs'
 import { Health } from './pages/health'
 import { Login } from './pages/login'
 
+// Components
+import { CustomSider } from './components/Sider'
+
 function App() {
   return (
     <BrowserRouter>
@@ -98,6 +101,7 @@ function App() {
                               text="Groof Admin"
                             />
                           )}
+                          Sider={() => <CustomSider />}
                         >
                           <Outlet />
                         </ThemedLayoutV2>
