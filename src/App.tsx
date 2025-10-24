@@ -33,6 +33,7 @@ function App() {
   return (
     <BrowserRouter>
       <ConfigProvider
+          motion={false}
           theme={{
             algorithm: [theme.darkAlgorithm, theme.compactAlgorithm],
             token: {

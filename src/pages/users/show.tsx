@@ -1,16 +1,33 @@
 import React from 'react'
 import { Show } from '@refinedev/antd'
-import { Tag, Descriptions } from 'antd'
+import { Tag, Descriptions, Button } from 'antd'
 import { useShow } from '@refinedev/core'
+import { useNavigate } from 'react-router-dom'
+import { FileTextOutlined } from '@ant-design/icons'
 import { User } from '../../types'
 
 export const UserShow: React.FC = () => {
   const { queryResult } = useShow<User>()
   const { data, isLoading } = queryResult
   const user = data?.data
+  const navigate = useNavigate()
 
   return (
-    <Show isLoading={isLoading}>
+    <Show
+      isLoading={isLoading}
+      headerButtons={({ defaultButtons }) => (
+        <>
+          {defaultButtons}
+          <Button
+            type="primary"
+            icon={<FileTextOutlined />}
+            onClick={() => navigate(`/logs?userId=${user?._id}`)}
+          >
+            View User Logs
+          </Button>
+        </>
+      )}
+    >
       <Descriptions column={1} bordered>
         <Descriptions.Item label="ID">{user?._id}</Descriptions.Item>
         <Descriptions.Item label="Email">{user?.email}</Descriptions.Item>

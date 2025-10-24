@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { List, useTable } from '@refinedev/antd'
 import { Table, Space, Select, Input, Tag, Form, Descriptions, Typography, Button } from 'antd'
 import { CrudFilters } from '@refinedev/core'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Log } from '../../types'
 
 const { Paragraph, Title } = Typography
@@ -16,7 +16,9 @@ const LOG_LEVEL_COLORS: Record<string, string> = {
 
 export const LogList: React.FC = () => {
   const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
   const [expandedRowKeys, setExpandedRowKeys] = useState<string[]>([])
+  const [hasProcessedUrlParam, setHasProcessedUrlParam] = useState(false)
 
   const { tableProps, searchFormProps, tableQueryResult, setFilters, filters } = useTable<Log>({
     resource: 'logs',
@@ -46,6 +48,18 @@ export const LogList: React.FC = () => {
       return filters
     }
   })
+
+  // Pre-fill userId from URL parameter
+  useEffect(() => {
+    const userIdParam = searchParams.get('userId')
+    if (userIdParam && searchFormProps?.form && !hasProcessedUrlParam) {
+      searchFormProps.form.setFieldsValue({ userId: userIdParam })
+      searchFormProps.form.submit()
+      setHasProcessedUrlParam(true)
+      // Remove the parameter from URL after using it
+      setSearchParams({})
+    }
+  }, [searchParams, searchFormProps?.form, hasProcessedUrlParam, setSearchParams])
 
   const toggleExpanded = (recordId: string) => {
     setExpandedRowKeys((prev) => {
