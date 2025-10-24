@@ -7,8 +7,10 @@ import {
   DeleteButton,
   DateField
 } from '@refinedev/antd'
-import { Table, Space, Input, Tag, Form } from 'antd'
+import { Table, Space, Input, Tag, Form, Typography } from 'antd'
 import { User } from '../../types'
+
+const { Title } = Typography
 
 export const UserList: React.FC = () => {
   const { tableProps, searchFormProps } = useTable<User>({
@@ -25,7 +27,7 @@ export const UserList: React.FC = () => {
   })
 
   return (
-    <List>
+    <List title={<Title level={2}>Users</Title>}>
       <Form {...searchFormProps} layout="inline" style={{ marginBottom: 16 }}>
         <Form.Item name="search">
           <Input.Search

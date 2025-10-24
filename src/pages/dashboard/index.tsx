@@ -62,7 +62,7 @@ export const Dashboard: React.FC = () => {
   const interactions = trackStatsData?.data?.interactions || []
 
   return (
-    <div style={{ padding: 24 }}>
+    <div>
       <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
         <Col span={24}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -119,6 +119,9 @@ export const Dashboard: React.FC = () => {
               <Title level={2}>
                 {statistics?.totals.likes || 0} / {statistics?.totals.dislikes || 0}
               </Title>
+              <Typography.Text type="secondary">
+                total
+              </Typography.Text>
             </Spin>
           </Card>
         </Col>

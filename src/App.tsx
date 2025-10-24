@@ -34,7 +34,7 @@ function App() {
     <BrowserRouter>
       <ConfigProvider
           theme={{
-            algorithm: theme.darkAlgorithm,
+            algorithm: [theme.darkAlgorithm, theme.compactAlgorithm],
             token: {
               colorPrimary: '#1890ff'
             }

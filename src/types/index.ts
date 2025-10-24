@@ -21,10 +21,7 @@ export interface Log {
   timestamp: string
   meta?: Record<string, any>
   userId?: string
-  path?: string
-  method?: string
   statusCode?: number
-  durationMs?: number
 }
 
 // Statistics types
