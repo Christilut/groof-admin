@@ -29,7 +29,14 @@ export const CustomSider: React.FC = () => {
         selectedKeys={[currentKey]}
         items={items}
         style={{ height: '100%', borderRight: 0 }}
+        className="custom-sider-menu"
       />
+      <style>{`
+        .custom-sider-menu .ant-menu-item-selected a,
+        .custom-sider-menu .ant-menu-item-selected span {
+          color: white !important;
+        }
+      `}</style>
     </AntdSider>
   )
 }
