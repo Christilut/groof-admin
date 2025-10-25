@@ -135,7 +135,15 @@ export const Dashboard: React.FC = () => {
                 <LineChart data={userGrowth}>
                   <XAxis dataKey="date" />
                   <YAxis />
-                  <Tooltip />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: '#1f1f1f',
+                      border: '1px solid #434343',
+                      borderRadius: '4px',
+                      color: '#fff'
+                    }}
+                    labelStyle={{ color: '#fff' }}
+                  />
                   <Legend />
                   <Line type="monotone" dataKey="newUsers" stroke="#1890ff" name="New Users" />
                 </LineChart>
