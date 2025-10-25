@@ -10,7 +10,8 @@ import {
   DashboardOutlined,
   UserOutlined,
   FileTextOutlined,
-  HeartOutlined
+  HeartOutlined,
+  BarChartOutlined
 } from '@ant-design/icons'
 
 import '@refinedev/antd/dist/reset.css'
@@ -25,6 +26,7 @@ import { UserList, UserShow, UserEdit } from './pages/users'
 import { LogList, LogShow } from './pages/logs'
 import { Health } from './pages/health'
 import { Login } from './pages/login'
+import { InteractionSourcesStats } from './pages/statistics'
 
 // Components
 import { CustomSider } from './components/Sider'
@@ -76,13 +78,21 @@ function App() {
                   }
                 },
                 {
+                  name: 'interaction-sources',
+                  list: '/statistics/interaction-sources',
+                  meta: {
+                    label: 'Interactions',
+                    icon: <BarChartOutlined />
+                  }
+                },
+                {
                   name: 'health',
                   list: '/health',
                   meta: {
                     label: 'System Health',
                     icon: <HeartOutlined />
                   }
-                }
+                },
               ]}
               options={{
                 syncWithLocation: true,
@@ -122,6 +132,7 @@ function App() {
                     <Route path="show/:id" element={<LogShow />} />
                   </Route>
                   <Route path="/health" element={<Health />} />
+                  <Route path="/statistics/interaction-sources" element={<InteractionSourcesStats />} />
                   <Route path="*" element={<ErrorComponent />} />
                 </Route>
 

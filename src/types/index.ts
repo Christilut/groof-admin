@@ -86,3 +86,26 @@ export const TIME_RANGE_OPTIONS = [
   { label: 'Last 30 days', value: '30d' as TimeRange },
   { label: 'Last 90 days', value: '90d' as TimeRange }
 ]
+
+// Interaction source statistics types
+export interface CombinationStats {
+  sourceType: string
+  inputType: string
+  sourceLabel: string
+  inputLabel: string
+  likes: number
+  dislikes: number
+  total: number
+  ratio: number
+}
+
+export interface TimeSeriesDataPoint {
+  date: string
+  [key: string]: string | number
+}
+
+export interface InteractionSourcesStats {
+  range: TimeRange
+  combinations: CombinationStats[]
+  timeSeries: TimeSeriesDataPoint[]
+}
