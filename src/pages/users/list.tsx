@@ -23,6 +23,9 @@ export const UserList: React.FC = () => {
           value: values.search
         }
       ]
+    },
+    pagination: {
+      pageSize: 100
     }
   })
 

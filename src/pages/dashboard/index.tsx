@@ -8,7 +8,6 @@ import {
   Bar,
   XAxis,
   YAxis,
-  CartesianGrid,
   Tooltip,
   Legend,
   ResponsiveContainer
@@ -134,7 +133,6 @@ export const Dashboard: React.FC = () => {
             <Spin spinning={userGrowthLoading}>
               <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={userGrowth}>
-                  <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="date" />
                   <YAxis />
                   <Tooltip />
@@ -151,10 +149,18 @@ export const Dashboard: React.FC = () => {
             <Spin spinning={trackStatsLoading}>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={interactions}>
-                  <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="date" />
                   <YAxis />
-                  <Tooltip />
+                  <Tooltip
+                    cursor={false}
+                    contentStyle={{
+                      backgroundColor: '#1f1f1f',
+                      border: '1px solid #434343',
+                      borderRadius: '4px',
+                      color: '#fff'
+                    }}
+                    labelStyle={{ color: '#fff' }}
+                  />
                   <Legend />
                   <Bar dataKey="likes" stackId="a" fill="#52c41a" name="Likes" />
                   <Bar dataKey="dislikes" stackId="a" fill="#ff4d4f" name="Dislikes" />
