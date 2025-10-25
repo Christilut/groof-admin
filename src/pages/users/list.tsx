@@ -4,7 +4,6 @@ import {
   useTable,
   EditButton,
   ShowButton,
-  DeleteButton,
   DateField
 } from '@refinedev/antd'
 import { Table, Space, Input, Tag, Form, Typography } from 'antd'
@@ -75,7 +74,6 @@ export const UserList: React.FC = () => {
             <Space>
               <ShowButton hideText size="small" recordItemId={record._id} />
               <EditButton hideText size="small" recordItemId={record._id} />
-              <DeleteButton hideText size="small" recordItemId={record._id} />
             </Space>
           )}
         />
