@@ -11,7 +11,8 @@ const LOG_LEVEL_COLORS: Record<string, string> = {
   error: 'red',
   warn: 'orange',
   info: 'blue',
-  debug: 'gray'
+  debug: 'gray',
+  http: 'default'
 }
 
 export const LogList: React.FC = () => {
@@ -156,6 +157,7 @@ export const LogList: React.FC = () => {
               <Select.Option value="error">Error</Select.Option>
               <Select.Option value="warn">Warn</Select.Option>
               <Select.Option value="info">Info</Select.Option>
+              <Select.Option value="http">HTTP</Select.Option>
               <Select.Option value="debug">Debug</Select.Option>
             </Select>
           </Form.Item>
