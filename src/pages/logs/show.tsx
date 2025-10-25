@@ -31,10 +31,7 @@ export const LogShow: React.FC = () => {
           </Tag>
         </Descriptions.Item>
         <Descriptions.Item label="Message">{log?.message}</Descriptions.Item>
-        <Descriptions.Item label="Method">{log?.method || '-'}</Descriptions.Item>
-        <Descriptions.Item label="Path">{log?.path || '-'}</Descriptions.Item>
         <Descriptions.Item label="Status Code">{log?.statusCode || '-'}</Descriptions.Item>
-        <Descriptions.Item label="Duration">{log?.durationMs ? `${log.durationMs}ms` : '-'}</Descriptions.Item>
         <Descriptions.Item label="User ID">{log?.userId || '-'}</Descriptions.Item>
       </Descriptions>
 

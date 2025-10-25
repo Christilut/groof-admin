@@ -20,7 +20,7 @@ export const LogList: React.FC = () => {
   const [expandedRowKeys, setExpandedRowKeys] = useState<string[]>([])
   const [hasProcessedUrlParam, setHasProcessedUrlParam] = useState(false)
 
-  const { tableProps, searchFormProps, tableQueryResult, setFilters, filters } = useTable<Log>({
+  const { tableProps, searchFormProps, setFilters, filters } = useTable<Log>({
     resource: 'logs',
     pagination: {
       pageSize: 1000
@@ -82,7 +82,7 @@ export const LogList: React.FC = () => {
 
   const clearFilter = (fieldName: string) => {
     searchFormProps?.form?.resetFields([fieldName])
-    const newFilters = filters.filter(f => f.field !== fieldName)
+    const newFilters = filters.filter(f => 'field' in f && f.field !== fieldName)
     setFilters(newFilters, 'replace')
   }
 
@@ -209,7 +209,7 @@ export const LogList: React.FC = () => {
         expandable={{
           expandedRowRender,
           expandedRowKeys,
-          onExpand: (expanded, record) => {
+          onExpand: (_expanded, record) => {
             toggleExpanded(record._id)
           }
         }}

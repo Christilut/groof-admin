@@ -33,123 +33,128 @@ function App() {
   return (
     <BrowserRouter>
       <ConfigProvider
-          motion={false}
-          theme={{
-            algorithm: [theme.darkAlgorithm, theme.compactAlgorithm],
-            token: {
-              colorPrimary: '#1890ff'
-            }
-          }}
-        >
-          <AntdApp>
-            <TimeRangeProvider>
-              <Refine
-                dataProvider={dataProvider}
-                authProvider={authProvider}
-                routerProvider={routerBindings}
-                resources={[
-                  {
-                    name: 'dashboard',
-                    list: '/',
-                    meta: {
-                      label: 'Dashboard',
-                      icon: <DashboardOutlined />
-                    }
-                  },
-                  {
-                    name: 'users',
-                    list: '/users',
-                    show: '/users/show/:id',
-                    edit: '/users/edit/:id',
-                    meta: {
-                      label: 'Users',
-                      icon: <UserOutlined />
-                    }
-                  },
-                  {
-                    name: 'logs',
-                    list: '/logs',
-                    show: '/logs/show/:id',
-                    meta: {
-                      label: 'Logs',
-                      icon: <FileTextOutlined />
-                    }
-                  },
-                  {
-                    name: 'health',
-                    list: '/health',
-                    meta: {
-                      label: 'System Health',
-                      icon: <HeartOutlined />
-                    }
+        theme={{
+          algorithm: [theme.darkAlgorithm, theme.compactAlgorithm],
+          token: {
+            colorPrimary: '#1890ff',
+            motion: false
+          }
+        }}
+      >
+        <AntdApp>
+          <TimeRangeProvider>
+            <Refine
+              dataProvider={dataProvider}
+              authProvider={authProvider}
+              routerProvider={routerBindings}
+              resources={[
+                {
+                  name: 'dashboard',
+                  list: '/',
+                  meta: {
+                    label: 'Dashboard',
+                    icon: <DashboardOutlined />
                   }
-                ]}
-                options={{
-                  syncWithLocation: true,
-                  warnWhenUnsavedChanges: true,
-                  title: { text: 'Groof Admin' }
-                }}
-              >
-                <Routes>
-                  <Route
-                    element={
-                      <Authenticated
-                        key="authenticated-layout"
-                        fallback={<Navigate to="/login" replace />}
+                },
+                {
+                  name: 'users',
+                  list: '/users',
+                  show: '/users/show/:id',
+                  edit: '/users/edit/:id',
+                  meta: {
+                    label: 'Users',
+                    icon: <UserOutlined />
+                  }
+                },
+                {
+                  name: 'logs',
+                  list: '/logs',
+                  show: '/logs/show/:id',
+                  meta: {
+                    label: 'Logs',
+                    icon: <FileTextOutlined />
+                  }
+                },
+                {
+                  name: 'health',
+                  list: '/health',
+                  meta: {
+                    label: 'System Health',
+                    icon: <HeartOutlined />
+                  }
+                }
+              ]}
+              options={{
+                syncWithLocation: true,
+                warnWhenUnsavedChanges: true,
+                title: { text: 'Groof Admin' }
+              }}
+            >
+              <Routes>
+                <Route
+                  element={
+                    <Authenticated
+                      key="authenticated-layout"
+                      fallback={<Navigate to="/login" replace />}
+                    >
+                      <ThemedLayoutV2
+                        Title={({ collapsed }) => (
+                          <ThemedTitleV2
+                            collapsed={collapsed}
+                            text="Groof Admin"
+                          />
+                        )}
+                        Sider={() => <CustomSider />}
                       >
-                        <ThemedLayoutV2
-                          Title={({ collapsed }) => (
-                            <ThemedTitleV2
-                              collapsed={collapsed}
-                              text="Groof Admin"
-                            />
-                          )}
-                          Sider={() => <CustomSider />}
-                        >
-                          <Outlet />
-                        </ThemedLayoutV2>
-                      </Authenticated>
-                    }
-                  >
-                    <Route index element={<Dashboard />} />
-                    <Route path="/users">
-                      <Route index element={<UserList />} />
-                      <Route path="show/:id" element={<UserShow />} />
-                      <Route path="edit/:id" element={<UserEdit />} />
-                    </Route>
-                    <Route path="/logs">
-                      <Route index element={<LogList />} />
-                      <Route path="show/:id" element={<LogShow />} />
-                    </Route>
-                    <Route path="/health" element={<Health />} />
-                    <Route path="*" element={<ErrorComponent />} />
+                        <Outlet />
+                      </ThemedLayoutV2>
+                    </Authenticated>
+                  }
+                >
+                  <Route index element={<Dashboard />} />
+                  <Route path="/users">
+                    <Route index element={<UserList />} />
+                    <Route path="show/:id" element={<UserShow />} />
+                    <Route path="edit/:id" element={<UserEdit />} />
                   </Route>
+                  <Route path="/logs">
+                    <Route index element={<LogList />} />
+                    <Route path="show/:id" element={<LogShow />} />
+                  </Route>
+                  <Route path="/health" element={<Health />} />
+                  <Route path="*" element={<ErrorComponent />} />
+                </Route>
 
-                  <Route
-                    element={<Login />}
-                    path="/login"
-                  />
-                </Routes>
-
-                <UnsavedChangesNotifier />
-                <DocumentTitleHandler
-                  handler={({ resource, action, params }) => {
-                    let title = 'Groof Admin'
-
-                    if (resource && action) {
-                      const actionName = action === 'list' ? '' : action
-                      title = `${resource.label || resource.name} ${actionName} | Groof Admin`
-                    } else if (resource) {
-                      title = `${resource.label || resource.name} | Groof Admin`
-                    }
-
-                    return title.trim()
-                  }}
+                <Route
+                  element={<Login />}
+                  path="/login"
                 />
-              </Refine>
-            </TimeRangeProvider>
-          </AntdApp>
-        </ConfigProvider>
+              </Routes>
+
+              <UnsavedChangesNotifier />
+              <DocumentTitleHandler
+                handler={({ resource, action }) => {
+                  const APP_NAME = 'Groof Admin'
+                  const formatTitle = (parts: string[]) =>
+                    [...parts.filter(Boolean), APP_NAME].join(' | ')
+
+                  if (window.location.pathname === '/login') {
+                    return formatTitle(['Welcome'])
+                  }
+
+                  if (resource) {
+                    const resourceLabel = resource.label || resource.name || ''
+                    const actionName = action === 'list' ? '' : (action || '')
+                    return formatTitle([resourceLabel, actionName])
+                  }
+
+                  return APP_NAME
+                }}
+              />
+            </Refine>
+          </TimeRangeProvider>
+        </AntdApp>
+      </ConfigProvider>
     </BrowserRouter>
   )
 }
