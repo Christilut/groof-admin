@@ -4,6 +4,9 @@ import { Table, Space, Select, Input, Tag, Form, Descriptions, Typography, Butto
 import { CrudFilters } from '@refinedev/core'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Log } from '../../types'
+import { emailCache } from '../../services/emailCache'
+import { fetchBatchEmails } from '../../services/userService'
+import { getColorFromString } from '../../utils/colorHash'
 
 const { Paragraph, Title } = Typography
 
@@ -20,6 +23,7 @@ export const LogList: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams()
   const [expandedRowKeys, setExpandedRowKeys] = useState<string[]>([])
   const [hasProcessedUrlParam, setHasProcessedUrlParam] = useState(false)
+  const [userEmails, setUserEmails] = useState<Record<string, string>>({})
 
   const { tableProps, searchFormProps, setFilters, filters } = useTable<Log>({
     resource: 'logs',
@@ -61,6 +65,39 @@ export const LogList: React.FC = () => {
       setSearchParams({})
     }
   }, [searchParams, searchFormProps?.form, hasProcessedUrlParam, setSearchParams])
+
+  // Fetch emails for user IDs in logs
+  useEffect(() => {
+    const logs = (tableProps.dataSource || []) as Log[]
+    if (logs.length === 0) return
+
+    // Extract unique user IDs from logs
+    const userIds = [...new Set(logs.map(log => log.userId).filter(Boolean) as string[])]
+    if (userIds.length === 0) return
+
+    // Check which user IDs don't have cached emails
+    const missingUserIds = emailCache.getMissing(userIds)
+
+    // If there are missing emails, fetch them
+    if (missingUserIds.length > 0) {
+      fetchBatchEmails(missingUserIds).then(emails => {
+        // Update cache
+        emailCache.setMany(emails)
+        // Update component state to trigger re-render
+        setUserEmails(prev => ({ ...prev, ...emails }))
+      })
+    } else {
+      // All emails are cached, populate state from cache
+      const cachedEmails: Record<string, string> = {}
+      userIds.forEach(userId => {
+        const email = emailCache.get(userId)
+        if (email) {
+          cachedEmails[userId] = email
+        }
+      })
+      setUserEmails(cachedEmails)
+    }
+  }, [tableProps.dataSource])
 
   const toggleExpanded = (recordId: string) => {
     setExpandedRowKeys((prev) => {
@@ -105,32 +142,37 @@ export const LogList: React.FC = () => {
     >×</span>
   )
 
-  const expandedRowRender = (record: Log) => (
-    <div>
-      <Descriptions size="small" column={2} bordered style={{ fontSize: '12px', marginBottom: 16 }}>
-        <Descriptions.Item label="Log ID">{record._id}</Descriptions.Item>
-        <Descriptions.Item label="User ID">
-          {record.userId ? (
-            <a
-              href={`/users/show/${record.userId}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ color: '#1890ff' }}
-            >
-              {record.userId}
-            </a>
-          ) : (
-            '-'
-          )}
-        </Descriptions.Item>
-      </Descriptions>
-      <Paragraph style={{ margin: 0 }}>
-        <pre style={{ margin: 0, fontSize: '11px', backgroundColor: '#1f1f1f', padding: '12px', borderRadius: '4px' }}>
-          {JSON.stringify(record, null, 2)}
-        </pre>
-      </Paragraph>
-    </div>
-  )
+  const expandedRowRender = (record: Log) => {
+    const email = record.userId ? (userEmails[record.userId] || record.userId) : null
+    const color = email && record.userId && userEmails[record.userId] ? getColorFromString(email) : '#1890ff'
+
+    return (
+      <div>
+        <Descriptions size="small" column={2} bordered style={{ fontSize: '12px', marginBottom: 16 }}>
+          <Descriptions.Item label="Log ID">{record._id}</Descriptions.Item>
+          <Descriptions.Item label="User Email">
+            {record.userId ? (
+              <a
+                href={`/users/show/${record.userId}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color, fontWeight: 500 }}
+              >
+                {email}
+              </a>
+            ) : (
+              '-'
+            )}
+          </Descriptions.Item>
+        </Descriptions>
+        <Paragraph style={{ margin: 0 }}>
+          <pre style={{ margin: 0, fontSize: '11px', backgroundColor: '#1f1f1f', padding: '12px', borderRadius: '4px' }}>
+            {JSON.stringify(record, null, 2)}
+          </pre>
+        </Paragraph>
+      </div>
+    )
+  }
 
   return (
     <List title={<Title level={2}>Logs</Title>}>
@@ -257,14 +299,16 @@ export const LogList: React.FC = () => {
           width={200}
           render={(userId: string) => {
             if (!userId) return '-'
+            const email = userEmails[userId] || 'Loading...'
+            const color = email !== 'Loading...' ? getColorFromString(email) : '#1890ff'
             return (
               <Button
                 type="link"
                 size="small"
                 onClick={() => navigate(`/users/show/${userId}`)}
-                style={{ padding: 0, fontSize: '12px' }}
+                style={{ padding: 0, fontSize: '12px', color, fontWeight: 500 }}
               >
-                {userId}
+                {email}
               </Button>
             )
           }}
