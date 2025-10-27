@@ -24,7 +24,7 @@ export const LogList: React.FC = () => {
   const [expandedRowKeys, setExpandedRowKeys] = useState<string[]>([])
   const [hasProcessedUrlParam, setHasProcessedUrlParam] = useState(false)
   const [userEmails, setUserEmails] = useState<Record<string, string>>({})
-  const [realtimeEnabled] = useState(false)
+  const [realtimeEnabled, setRealtimeEnabled] = useState(false)
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
 
   const { tableProps, searchFormProps, setFilters, filters, tableQuery } = useTable<Log>({
@@ -147,6 +147,16 @@ export const LogList: React.FC = () => {
     setFilters(newFilters, 'replace')
   }
 
+  const resetAllFilters = () => {
+    searchFormProps?.form?.resetFields()
+    setFilters([], 'replace')
+    tableQuery?.refetch()
+  }
+
+  const toggleRealtime = () => {
+    setRealtimeEnabled(prev => !prev)
+  }
+
   const ClearIcon = ({ onClick }: { onClick: (e: React.MouseEvent) => void }) => (
     <span
       style={{
@@ -166,15 +176,18 @@ export const LogList: React.FC = () => {
   )
 
   const renderMessage = (text: string, record: Log) => {
+    // Base span styles for all message spans
+    const baseSpanStyle = { fontSize: '12px' }
+
     // Only process HTTP logs
     if (record.level !== 'http') {
-      return <span style={{ fontSize: '12px' }}>{text}</span>
+      return <span style={baseSpanStyle}>{text}</span>
     }
 
     // Parse HTTP log format: METHOD /path STATUSCODE (timing)
     const parts = text.split(' ')
     if (parts.length < 3) {
-      return <span style={{ fontSize: '12px' }}>{text}</span>
+      return <span style={baseSpanStyle}>{text}</span>
     }
 
     const statusCode = parseInt(parts[2], 10)
@@ -182,13 +195,13 @@ export const LogList: React.FC = () => {
     // If status code is 400 or higher, highlight it in red
     if (statusCode >= 400) {
       return (
-        <span style={{ fontSize: '12px' }}>
+        <span style={baseSpanStyle}>
           {parts[0]} {parts[1]} <span style={{ color: '#ff4d4f', fontWeight: 600 }}>{parts[2]}</span> {parts.slice(3).join(' ')}
         </span>
       )
     }
 
-    return <span style={{ fontSize: '12px' }}>{text}</span>
+    return <span style={baseSpanStyle}>{text}</span>
   }
 
   // Function to determine if a row should be highlighted based on HTTP status code
@@ -320,6 +333,21 @@ export const LogList: React.FC = () => {
               }}
             />
           </Form.Item>
+
+          <Form.Item>
+            <Button onClick={resetAllFilters}>
+              Reset Filters
+            </Button>
+          </Form.Item>
+
+          <Form.Item>
+            <Button
+              type={realtimeEnabled ? 'primary' : 'default'}
+              onClick={toggleRealtime}
+            >
+              {realtimeEnabled ? '⏸ Pause Live' : '▶ Live Updates'}
+            </Button>
+          </Form.Item>
         </Space>
       </Form>
 
@@ -328,6 +356,7 @@ export const LogList: React.FC = () => {
         rowKey="_id"
         size="small"
         rowClassName={getRowClassName}
+        scroll={{ x: false } as any}
         expandable={{
           expandedRowRender,
           expandedRowKeys,
@@ -352,7 +381,7 @@ export const LogList: React.FC = () => {
         <Table.Column
           dataIndex="level"
           title="Level"
-          width={80}
+          width="40px"
           render={(level: string) => (
             <Tag color={LOG_LEVEL_COLORS[level]} style={{ fontSize: '11px', margin: 0 }}>
               {level.toUpperCase()}
@@ -362,19 +391,20 @@ export const LogList: React.FC = () => {
         <Table.Column
           dataIndex="timestamp"
           title="Timestamp"
-          width={140}
+          width="60px"
           render={(value) => <span style={{ fontSize: '12px' }}>{formatDate(value)}</span>}
         />
         <Table.Column
           dataIndex="message"
           title="Message"
+          width="60%"
           ellipsis
-          render={(text, record: Log) => renderMessage(text, record)}
+          render={(text: string, record: Log) => renderMessage(text, record)}
         />
         <Table.Column
           dataIndex="userId"
           title="User"
-          width={200}
+          width="100px"
           render={(userId: string) => {
             if (!userId) return '-'
             const email = userEmails[userId] || 'Loading...'
