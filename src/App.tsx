@@ -30,6 +30,7 @@ import { InteractionSourcesStats } from './pages/statistics'
 
 // Components
 import { CustomSider } from './components/Sider'
+import { CustomHeader } from './components/Header'
 
 function App() {
   return (
@@ -115,6 +116,7 @@ function App() {
                           />
                         )}
                         Sider={() => <CustomSider />}
+                        Header={() => <CustomHeader />}
                       >
                         <Outlet />
                       </ThemedLayoutV2>

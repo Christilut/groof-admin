@@ -1,15 +1,13 @@
 import { AuthProvider } from '@refinedev/core'
 import {
-  signInWithPopup,
+  User as FirebaseUser,
   GoogleAuthProvider,
-  signOut,
   onAuthStateChanged,
-  User as FirebaseUser
+  signInWithPopup,
+  signOut
 } from 'firebase/auth'
+import { axiosInstance } from '../config/axios'
 import { auth } from '../config/firebase'
-import axios from 'axios'
-
-const API_URL = import.meta.env.VITE_API_URL
 
 export const authProvider: AuthProvider = {
   login: async () => {
@@ -23,12 +21,12 @@ export const authProvider: AuthProvider = {
       const idToken = await user.getIdToken()
 
       // Verify with backend that user has admin role
-      const response = await axios.post(
-        `${API_URL}/admin/auth/login`,
+      const response = await axiosInstance.post(
+        '/admin/auth/login',
         {},
         {
           headers: {
-            Authorization: `Bearer ${idToken}`
+            Authorization: idToken
           }
         }
       )
