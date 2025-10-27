@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { List, useTable } from '@refinedev/antd'
 import { Table, Space, Select, Input, Tag, Form, Descriptions, Typography, Button } from 'antd'
 import { CrudFilters } from '@refinedev/core'
@@ -24,8 +24,10 @@ export const LogList: React.FC = () => {
   const [expandedRowKeys, setExpandedRowKeys] = useState<string[]>([])
   const [hasProcessedUrlParam, setHasProcessedUrlParam] = useState(false)
   const [userEmails, setUserEmails] = useState<Record<string, string>>({})
+  const [realtimeEnabled] = useState(false)
+  const intervalRef = useRef<NodeJS.Timeout | null>(null)
 
-  const { tableProps, searchFormProps, setFilters, filters } = useTable<Log>({
+  const { tableProps, searchFormProps, setFilters, filters, tableQuery } = useTable<Log>({
     resource: 'logs',
     pagination: {
       pageSize: 1000
@@ -65,6 +67,27 @@ export const LogList: React.FC = () => {
       setSearchParams({})
     }
   }, [searchParams, searchFormProps?.form, hasProcessedUrlParam, setSearchParams])
+
+  // Realtime polling
+  useEffect(() => {
+    if (realtimeEnabled) {
+      intervalRef.current = setInterval(() => {
+        tableQuery?.refetch()
+      }, 2000)
+    } else {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current)
+        intervalRef.current = null
+      }
+    }
+
+    // Cleanup on unmount
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current)
+      }
+    }
+  }, [realtimeEnabled, tableQuery])
 
   // Fetch emails for user IDs in logs
   useEffect(() => {
@@ -142,6 +165,50 @@ export const LogList: React.FC = () => {
     >×</span>
   )
 
+  const renderMessage = (text: string, record: Log) => {
+    // Only process HTTP logs
+    if (record.level !== 'http') {
+      return <span style={{ fontSize: '12px' }}>{text}</span>
+    }
+
+    // Parse HTTP log format: METHOD /path STATUSCODE (timing)
+    const parts = text.split(' ')
+    if (parts.length < 3) {
+      return <span style={{ fontSize: '12px' }}>{text}</span>
+    }
+
+    const statusCode = parseInt(parts[2], 10)
+
+    // If status code is 400 or higher, highlight it in red
+    if (statusCode >= 400) {
+      return (
+        <span style={{ fontSize: '12px' }}>
+          {parts[0]} {parts[1]} <span style={{ color: '#ff4d4f', fontWeight: 600 }}>{parts[2]}</span> {parts.slice(3).join(' ')}
+        </span>
+      )
+    }
+
+    return <span style={{ fontSize: '12px' }}>{text}</span>
+  }
+
+  // Function to determine if a row should be highlighted based on HTTP status code
+  const getRowClassName = (record: Log) => {
+    if (record.level !== 'http') {
+      return ''
+    }
+
+    // Parse HTTP log format: METHOD /path STATUSCODE (timing)
+    const parts = record.message.split(' ')
+    if (parts.length < 3) {
+      return ''
+    }
+
+    const statusCode = parseInt(parts[2], 10)
+    
+    // Return CSS class name for rows with status code 400 or higher
+    return statusCode >= 400 ? 'error-row' : ''
+  }
+
   const expandedRowRender = (record: Log) => {
     const email = record.userId ? (userEmails[record.userId] || record.userId) : null
     const color = email && record.userId && userEmails[record.userId] ? getColorFromString(email) : '#1890ff'
@@ -176,6 +243,16 @@ export const LogList: React.FC = () => {
 
   return (
     <List title={<Title level={2}>Logs</Title>}>
+      <style>
+        {`
+          .error-row {
+            background-color: rgba(255, 77, 79, 0.1) !important;
+          }
+          .error-row:hover {
+            background-color: rgba(255, 77, 79, 0.15) !important;
+          }
+        `}
+      </style>
       <Form {...searchFormProps} layout="inline" style={{ marginBottom: 16 }}>
         <Space wrap>
           <Form.Item name="level">
@@ -250,6 +327,7 @@ export const LogList: React.FC = () => {
         {...tableProps}
         rowKey="_id"
         size="small"
+        rowClassName={getRowClassName}
         expandable={{
           expandedRowRender,
           expandedRowKeys,
@@ -291,7 +369,7 @@ export const LogList: React.FC = () => {
           dataIndex="message"
           title="Message"
           ellipsis
-          render={(text) => <span style={{ fontSize: '12px' }}>{text}</span>}
+          render={(text, record: Log) => renderMessage(text, record)}
         />
         <Table.Column
           dataIndex="userId"
