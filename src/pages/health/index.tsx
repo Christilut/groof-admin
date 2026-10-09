@@ -55,24 +55,24 @@ export const Health: React.FC = () => {
             <Card
               title={
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span>MongoDB</span>
-                  <StatusIcon status={health?.mongodb.status || ''} />
+                  <span>PostgreSQL</span>
+                  <StatusIcon status={health?.postgres.status || ''} />
                 </div>
               }
             >
               <Descriptions column={1}>
                 <Descriptions.Item label="Status">
-                  <Tag color={health?.mongodb.connected ? 'green' : 'red'}>
-                    {health?.mongodb.connected ? 'Connected' : 'Disconnected'}
+                  <Tag color={health?.postgres.connected ? 'green' : 'red'}>
+                    {health?.postgres.connected ? 'Connected' : 'Disconnected'}
                   </Tag>
                 </Descriptions.Item>
                 <Descriptions.Item label="Database Size">
-                  {health?.mongodb.databaseSize?.toFixed(2)} MB
+                  {health?.postgres.databaseSize?.toFixed(2)} MB
                 </Descriptions.Item>
-                <Descriptions.Item label="Collections">
-                  {health?.mongodb.collections && (
+                <Descriptions.Item label="Tables">
+                  {health?.postgres.tables && (
                     <ul style={{ margin: 0, paddingLeft: 20 }}>
-                      {Object.entries(health.mongodb.collections).map(([name, count]) => (
+                      {Object.entries(health.postgres.tables).map(([name, count]) => (
                         <li key={name}>
                           {name}: {String(count)} documents
                         </li>

@@ -61,11 +61,11 @@ export interface TrackData {
 export interface Health {
   status: string
   timestamp: string
-  mongodb: {
+  postgres: {
     status: string
     connected: boolean
     databaseSize: number
-    collections: Record<string, number>
+    tables: Record<string, number>
   }
   redis: {
     status: string
